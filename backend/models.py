@@ -1,4 +1,4 @@
-from app import db
+from backend.extensions import db
 
 class Role(db.Model):
     __tablename__ = 'role'
@@ -25,6 +25,16 @@ class Company(db.Model):
         db.UniqueConstraint('nit', name='uq_company_nit'),
         db.UniqueConstraint('email', name='uq_company_email'),
     )
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'nit': self.nit,
+            'address': self.address,
+            'phone': self.phone,
+            'email': self.email,
+            'website': self.website
+    }
 
 class User(db.Model):
     __tablename__ = 'user'
@@ -42,6 +52,19 @@ class User(db.Model):
     __table_args__ = (
         db.UniqueConstraint('email', name='uq_user_email'),
     )
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'email': self.email,
+            'is_active': self.is_active,
+            'company_id': self.company_id,
+            'role_id': self.role_id,
+            'created_at': self.created_at,
+            'updated_at': self.updated_at,
+            'last_login': self.last_login,
+            'last_logout': self.last_logout
+    }
     
 class Employee(db.Model):
     __tablename__ = 'employee'
@@ -56,6 +79,17 @@ class Employee(db.Model):
     __table_args__ = (
         db.UniqueConstraint('email', name='uq_employee_email'),
     )
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'email': self.email,
+            'phone': self.phone,
+            'address': self.address,
+            'role_id': self.role_id,
+            'hire_date': self.hire_date,
+            'company_id': self.company_id
+    }
     
 class Payslip(db.Model):
     __tablename__ = 'payslip'
@@ -70,6 +104,20 @@ class Payslip(db.Model):
     observations = db.Column(db.String(200))
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'employee_id': self.employee_id,
+            'month': self.month,
+            'year': self.year,
+            'basic_salary': self.basic_salary,
+            'allowances': self.allowances,
+            'deductions': self.deductions,
+            'net_salary': self.net_salary,
+            'observations': self.observations,
+            'created_at': self.created_at,
+            'updated_at': self.updated_at
+    }
 
 class Bank(db.Model):
     __tablename__ = 'bank'
@@ -85,3 +133,13 @@ class Bank(db.Model):
         db.UniqueConstraint('nit', name='uq_bank_nit'),
         db.UniqueConstraint('account_number', name='uq_bank_account_number'),
     )
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'employee_id': self.employee_id,
+            'bank_name': self.bank_name,
+            'nit': self.nit,
+            'address': self.address,
+            'account_number': self.account_number,
+            'account_type': self.account_type
+    }
