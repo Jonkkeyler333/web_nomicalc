@@ -1,57 +1,48 @@
 from flask import Blueprint, request, jsonify
 from backend.models import Company
 from backend.extensions import db
+from sqlalchemy.exc import IntegrityError
 
 company_bp=Blueprint('company',__name__,url_prefix='/api/company')
 
 @company_bp.route('/', methods=['GET'])
 def get_companies():
-    companies = Company.query.all()
-    return jsonify([{
-        'id': company.id,
-        'name': company.name,
-        'nit': company.nit,
-        'address': company.address,
-        'phone': company.phone,
-        'email': company.email,
-        'website': company.website
-    } for company in companies]), 200
+    if request.args.get('name'):
+        name = request.args.get('name')
+        companies = Company.query.filter(Company.name.ilike(f'%{name}%')).all()
+        if not companies:
+            return jsonify({'error': 'No companies found'}), 404
+        return jsonify([company.to_dict() for company in companies]), 200
+    else:
+        companies = Company.query.all()
+        return jsonify([company.to_dict() for company in companies]), 200
     
 @company_bp.route('/<int:company_id>', methods=['GET'])
 def get_company(company_id):
     company = Company.query.get_or_404(company_id)
-    return jsonify({
-        'id': company.id,
-        'name': company.name,
-        'nit': company.nit,
-        'address': company.address,
-        'phone': company.phone,
-        'email': company.email,
-        'website': company.website
-    }), 200
-    
+    return jsonify(company.to_ditc()), 200
+
 @company_bp.route('/', methods=['POST'])
 def create_company():
-    data = request.get_json()
-    new_company = Company(
-        name=data['name'],
-        nit=data['nit'],
-        address=data['address'],
-        phone=data['phone'],
-        email=data['email'],
-        website=data.get('website')
-    )
-    db.session.add(new_company)
-    db.session.commit()
-    return jsonify({
-        'id': new_company.id,
-        'name': new_company.name,
-        'nit': new_company.nit,
-        'address': new_company.address,
-        'phone': new_company.phone,
-        'email': new_company.email,
-        'website': new_company.website
-    }), 201
+    try :
+        data = request.get_json()
+        new_company = Company(
+            name=data['name'],
+            nit=data['nit'],
+            address=data['address'],
+            phone=data['phone'],
+            email=data['email'],
+            website=data.get('website')
+        )
+        db.session.add(new_company)
+        db.session.commit()
+        return jsonify(new_company.to_dict()), 201
+    except IntegrityError:
+        db.session.rollback()
+        return jsonify({'error': 'Company with this name, nit or email already exists'}), 400
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
 
 @company_bp.route('/<int:company_id>',methods=['DELETE'])
 def delete_company(company_id):
@@ -77,12 +68,4 @@ def update_company(company_id):
     if 'website' in data:
         company.website = data['website']
     db.session.commit()
-    return jsonify({
-        'id': company.id,
-        'name': company.name,
-        'nit': company.nit,
-        'address': company.address,
-        'phone': company.phone,
-        'email': company.email,
-        'website': company.website
-    }), 200
+    return jsonify(company.to_dict()), 200
