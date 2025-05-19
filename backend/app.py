@@ -6,6 +6,7 @@ from backend.controllers.user import user_bp
 from backend.controllers.role import role_bp
 from backend.controllers.employee import employee_bp
 from backend.controllers.bank import bank_bp
+from backend.controllers.payslip import payslip_bp
 import os
 
 def create_app():
@@ -26,6 +27,7 @@ def create_app():
     app.register_blueprint(role_bp)
     app.register_blueprint(employee_bp)
     app.register_blueprint(bank_bp)
+    app.register_blueprint(payslip_bp)
 
     with app.app_context():
         from backend import models

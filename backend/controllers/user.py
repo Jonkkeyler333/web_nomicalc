@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from backend.models import User,Company,Role
 from backend.extensions import db
+from sqlalchemy.exc import IntegrityError
 
 user_bp=Blueprint('user',__name__,url_prefix='/api/user')
 

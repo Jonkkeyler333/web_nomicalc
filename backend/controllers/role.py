@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from backend.models import Role
 from backend.extensions import db
+from sqlalchemy.exc import IntegrityError
 
 role_bp=Blueprint('role',__name__,url_prefix='/api/role')
 
