@@ -32,6 +32,8 @@ def create_user():
             return jsonify({'error': 'Role not found'}), 404
         new_user = User(
             name=data['name'],
+            last_name=data['last_name'],
+            nuip=data['nuip'],
             email=data['email'],
             password=data['password'],
             is_active=data.get('is_active', True),
@@ -74,6 +76,10 @@ def update_user(user_id):
         user.password = data['password']
     if 'is_active' in data:
         user.is_active = data['is_active']
+    if 'last_name' in data:
+        user.last_name = data['last_name']
+    if 'nuip' in data:
+        user.nuip = data['nuip']
     if 'company_id' in data:
         if Company.query.get(data['company_id']) is None:
             return jsonify({'error': 'Company not found'}), 404

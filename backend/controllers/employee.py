@@ -30,11 +30,12 @@ def create_employee():
         return jsonify({'error': 'Role not found'}), 404
     new_employee = Employee(
         name=data['name'],
+        last_name=data['last_name'],
+        nuip=data['nuip'],
         email=data['email'],
         phone=data['phone'],
         address=data['address'],
         role_id=data['role_id'],
-        hire_date=data['hire_date'],
         company_id=data['company_id']
     )
     db.session.add(new_employee)
@@ -66,5 +67,9 @@ def update_employee(employee_id):
         employee.hire_date = data['hire_date']
     if 'company_id' in data:
         employee.company_id = data['company_id']
+    if 'last_name' in data:
+        employee.last_name = data['last_name']
+    if 'nuip' in data:
+        employee.nuip = data['nuip']
     db.session.commit()
     return jsonify(employee.to_dict()), 200

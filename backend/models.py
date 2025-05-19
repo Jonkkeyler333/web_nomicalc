@@ -44,6 +44,8 @@ class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(70), nullable=False)
+    last_name = db.Column(db.String(70))
+    nuip=db.Column(db.BigInteger)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(128), nullable=False)
     is_active = db.Column(db.Boolean, default=True)
@@ -60,6 +62,8 @@ class User(db.Model):
         return {
             'id': self.id,
             'name': self.name,
+            'last_name': self.last_name,
+            'nuip': self.nuip,
             'email': self.email,
             'is_active': self.is_active,
             'company_id': self.company_id,
@@ -74,6 +78,8 @@ class Employee(db.Model):
     __tablename__ = 'employee'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(70), nullable=False)
+    last_name = db.Column(db.String(70))
+    nuip=db.Column(db.BigInteger)
     email = db.Column(db.String(120), unique=True, nullable=False)
     phone = db.Column(db.String(20), nullable=False)
     address = db.Column(db.String(200), nullable=False)
@@ -87,6 +93,8 @@ class Employee(db.Model):
         return {
             'id': self.id,
             'name': self.name,
+            'last_name': self.last_name,
+            'nuip': self.nuip,
             'email': self.email,
             'phone': self.phone,
             'address': self.address,
