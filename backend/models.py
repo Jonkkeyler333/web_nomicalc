@@ -105,6 +105,7 @@ class Payslip(db.Model):
     allowances = db.Column(db.Float, nullable=False)
     deductions = db.Column(db.Float, nullable=False)
     net_salary = db.Column(db.Float, nullable=False)
+    account_number = db.Column(db.BigInteger, db.ForeignKey('bank_account.account_number',name='fk_payslip_bank'), nullable=False)
     observations = db.Column(db.String(200))
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
@@ -118,19 +119,19 @@ class Payslip(db.Model):
             'allowances': self.allowances,
             'deductions': self.deductions,
             'net_salary': self.net_salary,
+            'account_number': self.account_number,
             'observations': self.observations,
             'created_at': self.created_at,
             'updated_at': self.updated_at
     }
 
-class Bank(db.Model):
-    __tablename__ = 'bank'
-    id = db.Column(db.Integer, primary_key=True)
+class BankAccount(db.Model):
+    __tablename__ = 'bank_account'
+    account_number = db.Column(db.BigInteger,nullable=False,primary_key=True,unique=True)
     employee_id= db.Column(db.Integer, db.ForeignKey('employee.id',name='fk_bank_employee'), nullable=False)
     bank_name = db.Column(db.String(50), unique=True, nullable=False)
     nit = db.Column(db.String(20), unique=True, nullable=False)
     address = db.Column(db.String(200), nullable=False)
-    account_number = db.Column(db.String(20), unique=True, nullable=False)
     account_type = db.Column(db.String(20), nullable=False)
     __table_args__ = (
         db.UniqueConstraint('bank_name', name='uq_bank_bank_name'),
@@ -139,11 +140,10 @@ class Bank(db.Model):
     )
     def to_dict(self):
         return {
-            'id': self.id,
+            'account_number': self.account_number,
             'employee_id': self.employee_id,
             'bank_name': self.bank_name,
             'nit': self.nit,
             'address': self.address,
-            'account_number': self.account_number,
             'account_type': self.account_type
     }

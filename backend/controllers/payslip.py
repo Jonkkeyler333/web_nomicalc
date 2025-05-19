@@ -52,6 +52,7 @@ def create_payslip():
         allowances=data['net_salary'],
         deductions=data['deductions'],
         observations=data['observations'],
+        account_number=data['account_number'],
     )
     db.session.add(new_payslip)
     db.session.commit()
@@ -86,5 +87,9 @@ def update_payslip(payslip_id):
         payslip.deductions = data['deductions']
     if 'observations' in data:
         payslip.observations = data['observations']
+    if 'account_number' in data:
+        if Employee.query.get(data['employee_id']) is None:
+            return jsonify({'error': 'Employee not found'}), 404
+        payslip.account_number = data['account_number']
     db.session.commit()
     return jsonify(payslip.to_dict()), 200

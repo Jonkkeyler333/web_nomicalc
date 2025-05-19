@@ -1,5 +1,5 @@
 from flask import Blueprint,request,jsonify
-from backend.models import Employee,Company,Role,Bank
+from backend.models import Employee,Company,Role
 from backend.extensions import db
 
 employee_bp=Blueprint('employee',__name__,url_prefix='/api/employee')
@@ -28,8 +28,6 @@ def create_employee():
         return jsonify({'error': 'Company not found'}), 404
     if Role.query.get(data['role_id']) is None:
         return jsonify({'error': 'Role not found'}), 404
-    if Bank.query.get(data['bank_id']) is None:
-        return jsonify({'error': 'Bank not found'}), 404
     new_employee = Employee(
         name=data['name'],
         email=data['email'],

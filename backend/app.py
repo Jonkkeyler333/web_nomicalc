@@ -5,7 +5,7 @@ from backend.controllers.company import company_bp
 from backend.controllers.user import user_bp
 from backend.controllers.role import role_bp
 from backend.controllers.employee import employee_bp
-from backend.controllers.bank import bank_bp
+from backend.controllers.bank_account import bank_bp
 from backend.controllers.payslip import payslip_bp
 import os
 
@@ -16,7 +16,7 @@ def create_app():
     
     @app.route('/')
     def index():
-        return Response("<h1>Welcome to the API</h1>",200)
+        return Response("<h1>Welcome to the <em>API</em> of Web_nomicalc</h1> <h2>Ve a /api/employee</h2>",200)
 
     # Inicializa extensiones con la app
     db.init_app(app)
