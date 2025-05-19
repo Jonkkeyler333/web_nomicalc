@@ -4,6 +4,8 @@ from backend.extensions import db, migrate
 from backend.controllers.company import company_bp
 from backend.controllers.user import user_bp
 from backend.controllers.role import role_bp
+from backend.controllers.employee import employee_bp
+from backend.controllers.bank import bank_bp
 import os
 
 def create_app():
@@ -22,6 +24,8 @@ def create_app():
     app.register_blueprint(company_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(role_bp)
+    app.register_blueprint(employee_bp)
+    app.register_blueprint(bank_bp)
 
     with app.app_context():
         from backend import models

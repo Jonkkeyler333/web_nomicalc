@@ -8,8 +8,12 @@ class Role(db.Model):
     __table_args__ = (
         db.UniqueConstraint('name', name='uq_role_name'),
     )
-    def __repr__(self):
-        return f"role('{self.id}', '{self.name}')"
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description
+        }
     
 class Company(db.Model):
     __tablename__ = 'company'
