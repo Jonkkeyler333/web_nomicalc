@@ -32,7 +32,7 @@ def create_company():
             address=data['address'],
             phone=data['phone'],
             email=data['email'],
-            website=data.get('website')
+            website=data['website'],
         )
         db.session.add(new_company)
         db.session.commit()
