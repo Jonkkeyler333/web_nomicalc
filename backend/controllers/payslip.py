@@ -4,7 +4,6 @@ from backend.extensions import db
 
 payslip_bp=Blueprint('payslip',__name__,url_prefix='/api/payslip')
 
-
 def check_values(data,*args):
     for arg in args:
         if data[arg] < 0 or data[arg] == None:

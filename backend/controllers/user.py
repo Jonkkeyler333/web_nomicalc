@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from backend.models import User,Company,Role
 from backend.extensions import db
 from sqlalchemy.exc import IntegrityError
+from werkzeug.security import generate_password_hash
 
 user_bp=Blueprint('user',__name__,url_prefix='/api/user')
 
@@ -30,12 +31,15 @@ def create_user():
             return jsonify({'error': 'Company not found'}), 404
         if Role.query.get(data['role_id']) is None:
             return jsonify({'error': 'Role not found'}), 404
+        if data['password'] is None:
+            return jsonify({'error': 'Password is required'}), 400
+        password_hash=generate_password_hash(data['password'])
         new_user = User(
             name=data['name'],
             last_name=data['last_name'],
             nuip=data['nuip'],
             email=data['email'],
-            password=data['password'],
+            password=password_hash,
             is_active=data.get('is_active', True),
             company_id=data['company_id'],
             role_id=data['role_id']

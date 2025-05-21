@@ -81,6 +81,8 @@ class Employee(db.Model):
     last_name = db.Column(db.String(70))
     nuip=db.Column(db.BigInteger)
     email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(128))
+    is_active = db.Column(db.Boolean, default=True)
     phone = db.Column(db.String(20), nullable=False)
     address = db.Column(db.String(200), nullable=False)
     role_id = db.Column(db.Integer, db.ForeignKey('role.id',name='fk_employee_role'), nullable=False)

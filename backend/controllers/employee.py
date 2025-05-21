@@ -1,6 +1,8 @@
 from flask import Blueprint,request,jsonify
 from backend.models import Employee,Company,Role
 from backend.extensions import db
+from sqlalchemy.exc import IntegrityError
+from werkzeug.security import generate_password_hash
 
 employee_bp=Blueprint('employee',__name__,url_prefix='/api/employee')
 
@@ -23,24 +25,36 @@ def get_employee(employee_id):
 
 @employee_bp.route('/',methods=['POST'])
 def create_employee():
-    data = request.get_json()
-    if Company.query.get(data['company_id']) is None:
-        return jsonify({'error': 'Company not found'}), 404
-    if Role.query.get(data['role_id']) is None:
-        return jsonify({'error': 'Role not found'}), 404
-    new_employee = Employee(
-        name=data['name'],
-        last_name=data['last_name'],
-        nuip=data['nuip'],
-        email=data['email'],
-        phone=data['phone'],
-        address=data['address'],
-        role_id=data['role_id'],
-        company_id=data['company_id']
-    )
-    db.session.add(new_employee)
-    db.session.commit()
-    return jsonify(new_employee.to_dict()), 201
+    try:
+        data = request.get_json()
+        if Company.query.get(data['company_id']) is None:
+            return jsonify({'error': 'Company not found'}), 404
+        if Role.query.get(data['role_id']) is None:
+            return jsonify({'error': 'Role not found'}), 404
+        if data['password'] is None:
+            return jsonify({'error': 'Password is required'}), 400
+        password_hash=generate_password_hash(data['password'])
+        new_employee = Employee(
+            name=data['name'],
+            last_name=data['last_name'],
+            nuip=data['nuip'],
+            email=data['email'],
+            phone=data['phone'],
+            password=password_hash,
+            is_active=data.get('is_active', True),
+            address=data['address'],
+            role_id=data['role_id'],
+            company_id=data['company_id']
+        )
+        db.session.add(new_employee)
+        db.session.commit()
+        return jsonify(new_employee.to_dict()), 201
+    except IntegrityError:
+        db.session.rollback()
+        return jsonify({'error': 'Employee with this email already exists'}), 400
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
 
 @employee_bp.route('/<int:employee_id>',methods=['DELETE'])
 def delete_employee(employee_id):

@@ -1,6 +1,6 @@
 from flask import Flask
 from flask import Response
-from backend.extensions import db, migrate
+from backend.extensions import db, migrate , jwt
 from backend.controllers.company import company_bp
 from backend.controllers.user import user_bp
 from backend.controllers.role import role_bp
@@ -21,6 +21,7 @@ def create_app():
     # Inicializa extensiones con la app
     db.init_app(app)
     migrate.init_app(app, db)
+    jwt.init_app(app)
     # Registra blueprints
     app.register_blueprint(company_bp)
     app.register_blueprint(user_bp)
