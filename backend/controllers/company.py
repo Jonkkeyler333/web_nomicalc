@@ -23,7 +23,7 @@ def get_company(company_id):
     company = Company.query.get_or_404(company_id)
     return jsonify(company.to_ditc()), 200
 
-@company_bp.route('/<int:code>', methods=['GET'])
+@company_bp.route('/code/<int:code>', methods=['GET'])
 def get_company_by_code(code):
     company = Company.query.filter_by(code=code).first()
     if not company:

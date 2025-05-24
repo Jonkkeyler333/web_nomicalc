@@ -4,7 +4,8 @@ import ToggleRole from '../components/ToggleRole';
 import FormInput from '../components/FormInput';
 import FormSection from '../components/FormSection';
 import SubmitButton from '../components/SubmitButton';
-import { register_company ,register_us} from "../services/registerService";
+import { register_company ,register_us ,register_employee} from "../services/registerService";
+import { checkCompany } from "../services/checkService";
 
 export default function RegisterPage() {
   // Estados para la empresa
@@ -15,7 +16,7 @@ export default function RegisterPage() {
   const [companyEmail, setCompanyEmail] = useState("");
   const [companyWebsite, setCompanyWebsite] = useState("");
 
-  // Estados para el usuario
+  // Estados para el usuario y empleado
   const [name, setName] = useState("");
   const [last_name, setLastName] = useState("");
   const [nuip, setNuip] = useState("");
@@ -25,6 +26,13 @@ export default function RegisterPage() {
   const [success, setSuccess] = useState(false);
   // const [empleado, setEmpleado] = useState("");
   // const [admin , setAdmin] = useState("");
+
+  // Estados para el empleado
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [companycode, setCompanyCode] = useState("");
+
+  // Estados
   const [role, setRole] = useState(null);
   const navigate = useNavigate();
 
@@ -56,7 +64,6 @@ export default function RegisterPage() {
         company_id: company.id,
         role_id: 1
       });
-
       setSuccess(true);
       setTimeout(() => navigate("/"), 2000);
     } catch (err) {
@@ -67,27 +74,70 @@ export default function RegisterPage() {
     }
   };
 
-  return (
-    <div style={{ maxWidth: 500, margin: '2rem auto' }}>
-      <h1>Registro</h1>
-      <ToggleRole role={role} onSelect={setRole} />
+  const handleSubmitEmpleado = async e => {
+    e.preventDefault();
+    setError("");
+    setSuccess(false);
+    try {
+      // 1. Verificar si la compañia existe
+      const companyRes = await checkCompany(companycode);
+      const company = companyRes.data;
+      console.log(company);
 
+      // 2. Registrar el empleado role_id = 2
+      await register_employee({
+        name,
+        last_name,
+        nuip,
+        email,
+        phone,
+        password,
+        address,
+        role_id : 2,
+        company_id : company.id
+      });
+      setSuccess(true);
+      setTimeout(() => navigate("/"), 2000);
+    } catch (err) {
+      setError(
+        err.response?.data?.error ||
+        "Error al registrar el usuario"
+      );
+    }
+  }
+
+  return (
+    <div style={{ maxWidth: 500, textAlign: 'center' ,margin: '2rem auto' }}>
+      <h1>Registro</h1>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {success && (
+        <p style={{ color: 'green' }}>
+          Registro exitoso, redirigiendo...
+        </p>
+      )}
+      <ToggleRole role={role} onSelect={setRole} />
       {role === 'empleado' && (
-        <form onSubmit={handleSubmit}>
+        <>
+        <h2>Registro de Empleado</h2>
+        <form onSubmit={handleSubmitEmpleado}>
           <FormSection title="Datos del Usuario">
             <FormInput label="Nombre" value={name} onChange={e => setName(e.target.value)} required />
             <FormInput label="Apellido" value={last_name} onChange={e => setLastName(e.target.value)} required />
+            <FormInput label="Teléfono" value={phone} onChange={e => setPhone(e.target.value)} required />
+            <FormInput label="Dirección" value={address} onChange={e => setAddress(e.target.value)} required />
             <FormInput label="NUIP" value={nuip} onChange={e => setNuip(e.target.value)} required />
             <FormInput label="Email" type="email" value={email} onChange={e => setEmail(e.target.value)} required />
             <FormInput label="Contraseña" type="password" value={password} onChange={e => setPassword(e.target.value)} required />
+            <FormInput label='Código de empresa' placeholder='El código que tio tu admin de compañia' value={companycode} onChange={e => setCompanyCode(e.target.value)} required />
           </FormSection>
           <SubmitButton>Registrar Empleado</SubmitButton>
         </form>
+        </>
       )}
 
       {role === 'admin' && (
-      <>
-          <h1>Registro de Empresa y Usuario</h1>
+        <>
+          <h2>Registro de Empresa y Compañia</h2>
           {error && <p style={{ color: 'red' }}>{error}</p>}
           {success && <p style={{ color: 'green' }}>¡Registro exitoso! Redirigiendo...</p>}
           <form onSubmit={handleSubmit}>
@@ -109,15 +159,14 @@ export default function RegisterPage() {
             </FormSection>
             <SubmitButton>Registrar Administrador</SubmitButton>
           </form>
-
-          <div style={{ marginTop: '1rem' }}>
+        </>
+      )}
+      <div style={{ marginTop: '1rem' }}>
             <p>¿Ya tienes cuenta?</p>
             <Link to="/" style={{ textDecoration: 'none', color: 'blue' }}>
               Inicia sesión aquí
             </Link>
-          </div>
-      </>
-    )}
+      </div>
     </div>
   );
 

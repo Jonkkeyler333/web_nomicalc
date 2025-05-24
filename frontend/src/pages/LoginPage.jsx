@@ -6,6 +6,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async e => {
@@ -13,16 +14,28 @@ export default function LoginPage() {
     try {
       const { data } = await login(email, password);
       localStorage.setItem('access_token', data.access_token);
-      navigate('/');
+      setError('');
+      setSuccess(true);
+      //esperamos 2 segundos para que el usuario vea el mensaje de exito
+      setTimeout(10000 , () => {
+        setError('');
+        setSuccess(false);
+      });
+      navigate('/home');
     } catch (err) {
       setError(err.response?.data?.error || 'Error de autenticación');
     }
   };
 
   return (
-    <div style={{ maxWidth: 400, margin: '2rem auto' }}>
+    <div style={{ maxWidth: 400, textAlign: 'center',margin: '2rem auto' }}>
       <h1>Login</h1>
       {error && <p style={{ color: 'red' }}>{error}</p>}
+      {success && (
+        <p style={{ color: 'green' }}>
+          Login exitoso, redirigiendo...
+        </p>
+      )}
       <form onSubmit={handleSubmit}>
         <div>
           <label>Email</label><br />
