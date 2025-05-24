@@ -12,9 +12,7 @@ export default function LoginPage() {
     e.preventDefault();
     try {
       const { data } = await login(email, password);
-      // Guardamos token en localStorage
       localStorage.setItem('access_token', data.access_token);
-      // Redirigimos a la página principal
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.error || 'Error de autenticación');

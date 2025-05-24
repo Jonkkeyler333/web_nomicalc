@@ -24,6 +24,7 @@ class Company(db.Model):
     phone = db.Column(db.String(20), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     website = db.Column(db.String(100))
+    code = db.Column(db.Integer,nullable=False)
     __table_args__ = (
         db.UniqueConstraint('name', name='uq_company_name'),
         db.UniqueConstraint('nit', name='uq_company_nit'),
@@ -37,7 +38,8 @@ class Company(db.Model):
             'address': self.address,
             'phone': self.phone,
             'email': self.email,
-            'website': self.website
+            'website': self.website,
+            'code': self.code
     }
 
 class User(db.Model):

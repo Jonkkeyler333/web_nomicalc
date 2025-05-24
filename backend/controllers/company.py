@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from backend.models import Company
 from backend.extensions import db
 from sqlalchemy.exc import IntegrityError
+from random import randint
 
 company_bp=Blueprint('company',__name__,url_prefix='/api/company')
 
@@ -22,6 +23,13 @@ def get_company(company_id):
     company = Company.query.get_or_404(company_id)
     return jsonify(company.to_ditc()), 200
 
+@company_bp.route('/<int:code>', methods=['GET'])
+def get_company_by_code(code):
+    company = Company.query.filter_by(code=code).first()
+    if not company:
+        return jsonify({'error': 'Company not found'}), 404
+    return jsonify(company.to_dict()), 200
+
 @company_bp.route('/', methods=['POST'])
 def create_company():
     try :
@@ -33,6 +41,7 @@ def create_company():
             phone=data['phone'],
             email=data['email'],
             website=data['website'],
+            code=randint(100,9999)
         )
         db.session.add(new_company)
         db.session.commit()
