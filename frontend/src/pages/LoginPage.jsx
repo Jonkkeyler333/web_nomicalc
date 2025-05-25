@@ -1,19 +1,24 @@
 import { useState } from 'react';
 import { useNavigate ,Link } from 'react-router-dom';
-import { login } from '../services/authService';
+import { loginService } from '../services/authService';
+import { useAuth } from '../context/authContext';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const {login} = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      const { data } = await login(email, password);
-      localStorage.setItem('access_token', data.access_token);
+      const { data } = await loginService(email, password);
+      console.log(data);
+      // localStorage.setItem('access_token', data.access_token);
+      // login(data.user, data.access_token);
+      login(data);
       setError('');
       setSuccess(true);
       //esperamos 2 segundos para que el usuario vea el mensaje de exito

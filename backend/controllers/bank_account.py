@@ -60,3 +60,10 @@ def delete_bank(account_number):
     db.session.delete(bank)
     db.session.commit()
     return jsonify({'message': 'BankAccount deleted successfully'}), 200
+
+@bank_bp.route('/employee/<int:employee_id>', methods=['GET'])
+def get_bank_by_employee(employee_id):
+    bank = BankAccount.query.filter_by(employee_id=employee_id).first()
+    if not bank:
+        return jsonify({'error': 'No banks found for this employee'}), 404
+    return jsonify(bank.to_dict()), 200

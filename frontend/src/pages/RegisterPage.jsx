@@ -5,6 +5,7 @@ import FormInput from '../components/FormInput';
 import FormSection from '../components/FormSection';
 import SubmitButton from '../components/SubmitButton';
 import { register_company ,register_us ,register_employee} from "../services/registerService";
+import { register_bank } from "../services/bankService";
 import { checkCompany } from "../services/checkService";
 
 export default function RegisterPage() {
@@ -31,6 +32,13 @@ export default function RegisterPage() {
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [companycode, setCompanyCode] = useState("");
+
+  // Estados para el banco
+  const [bankcode, setBankyCode] = useState("");
+  const [bankName, setBankName] = useState("");
+  const [bankNit, setBankNit] = useState("");
+  const [bankAddress, setBankAddress] = useState("");
+  const [bankType,setBankType] = useState("");
 
   // Estados
   const [role, setRole] = useState(null);
@@ -83,9 +91,10 @@ export default function RegisterPage() {
       const companyRes = await checkCompany(companycode);
       const company = companyRes.data;
       console.log(company);
+      console.log(company.id);
 
       // 2. Registrar el empleado role_id = 2
-      await register_employee({
+      const employeeRest = await register_employee({
         name,
         last_name,
         nuip,
@@ -96,6 +105,16 @@ export default function RegisterPage() {
         role_id : 2,
         company_id : company.id
       });
+
+      await register_bank({
+        account_number: bankcode,
+        employee_id: employeeRest.data.id,
+        bank_name: bankName,
+        nit: bankNit,
+        address: bankAddress,
+        account_type: bankType
+      });
+
       setSuccess(true);
       setTimeout(() => navigate("/"), 2000);
     } catch (err) {
@@ -118,8 +137,16 @@ export default function RegisterPage() {
       <ToggleRole role={role} onSelect={setRole} />
       {role === 'empleado' && (
         <>
-        <h2>Registro de Empleado</h2>
+        <h2>Registro de Empleado y su cuenta bancaria</h2>
         <form onSubmit={handleSubmitEmpleado}>
+          <FormSection title='Datos del Banco'>
+            <FormInput label="Número de cuenta" placeholder="Número de cuenta" value={bankcode} onChange={e => setBankyCode(e.target.value)} required />
+            <FormInput label="Nombre del banco" placeholder="Nombre del banco" value={bankName} onChange={e => setBankName(e.target.value)} required />
+            <FormInput label="NIT del banco" placeholder="NIT del banco" value={bankNit} onChange={e => setBankNit(e.target.value)} required />
+            <FormInput label="Dirección del banco" placeholder="Dirección del banco" value={bankAddress} onChange={e => setBankAddress(e.target.value)} required />
+            <FormInput label="Tipo de cuenta (ahorros/corriente)" placeholder="Tipo de cuenta" value={bankType} onChange={e => setBankType(e.target.value)} required />
+          </FormSection>
+          
           <FormSection title="Datos del Usuario">
             <FormInput label="Nombre" value={name} onChange={e => setName(e.target.value)} required />
             <FormInput label="Apellido" value={last_name} onChange={e => setLastName(e.target.value)} required />

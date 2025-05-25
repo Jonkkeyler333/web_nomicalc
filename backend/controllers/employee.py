@@ -3,6 +3,7 @@ from backend.models import Employee,Company,Role
 from backend.extensions import db
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash
+from flask_jwt_extended import jwt_required
 
 employee_bp=Blueprint('employee',__name__,url_prefix='/api/employee')
 
@@ -53,6 +54,7 @@ def create_employee():
         db.session.rollback()
         return jsonify({'error': 'Employee with this email already exists'}), 400
     except Exception as e:
+        print("Error en create_employee:", str(e))
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
@@ -87,3 +89,20 @@ def update_employee(employee_id):
         employee.nuip = data['nuip']
     db.session.commit()
     return jsonify(employee.to_dict()), 200
+
+
+@employee_bp.route('/company/<int:company_id>', methods=['GET'])
+@jwt_required()
+def get_employees_by_company(company_id):
+    filters = []
+    if request.args.get('name'):
+        name = request.args.get('name')
+        filters.append(Employee.name.ilike(f'%{name}%'))
+    filters.append(Employee.company_id == company_id)
+    if filters:
+        employees = Employee.query.filter(*filters).all()
+    else:
+        employees = Employee.query.all()
+    if not employees:
+        return jsonify({'error': 'No employees found'}), 404 
+    return jsonify([employee.to_dict() for employee in employees]), 200
