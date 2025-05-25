@@ -103,6 +103,6 @@ def get_employees_by_company(company_id):
         employees = Employee.query.filter(*filters).all()
     else:
         employees = Employee.query.all()
-    if not employees:
-        return jsonify({'error': 'No employees found'}), 404 
+    # if not employees:
+    #     return jsonify({'error': 'No employees found'}), 404 
     return jsonify([employee.to_dict() for employee in employees]), 200

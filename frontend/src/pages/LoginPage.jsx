@@ -16,12 +16,9 @@ export default function LoginPage() {
     try {
       const { data } = await loginService(email, password);
       console.log(data);
-      // localStorage.setItem('access_token', data.access_token);
-      // login(data.user, data.access_token);
       login(data);
       setError('');
       setSuccess(true);
-      //esperamos 2 segundos para que el usuario vea el mensaje de exito
       setTimeout(() => {
           setError('');
           setSuccess(false);

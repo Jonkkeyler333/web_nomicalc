@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/authContext';
+import { useNavigate ,Link } from 'react-router-dom';
 import { getEmployeesByCompany } from '../services/employeeService';
 import { getCompanyById } from '../services/companyService';
+import { getBank } from '../services/bankService';
 import './HomeAdmin.css'; // Necesitaremos crear este archivo CSS
 
 export default function HomeAdmin() {
@@ -9,6 +11,8 @@ export default function HomeAdmin() {
     const [employees, setEmployees] = useState([]);
     const [company, setCompany] = useState(null);
     const [error, setError] = useState(null);
+    const [bankInfo, setBankInfo] = useState({});
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (companyId) {
@@ -24,13 +28,28 @@ export default function HomeAdmin() {
     const handleManagePayslip = (employeeId) => {
         // Aquí la lógica para navegar a la página de nóminas del empleado
         console.log("Administrar nómina del empleado:", employeeId);
-        // navigate(`/payslip/${employeeId}`);
+        navigate(`/payslip/${employeeId}`);
     };
 
     const handleEditEmployee = (employeeId) => {
         // Aquí la lógica para editar el empleado
         console.log("Editar empleado:", employeeId);
         // navigate(`/employees/edit/${employeeId}`);
+    };
+
+    const fetchBankInfo = async (employeeId) => {
+        try {
+            const res = await getBank(employeeId);
+            setBankInfo(prev => ({
+                ...prev,
+                [employeeId]: res.data
+            }));
+        } catch (err) {
+            setBankInfo(prev => ({
+                ...prev,
+                [employeeId]: { error: 'No disponible' }
+            }));
+        }
     };
 
     useEffect(() => {
@@ -78,6 +97,8 @@ export default function HomeAdmin() {
                     <th>Email</th>
                     <th>NUIP</th>
                     <th>Teléfono</th>
+                    <th>Banco</th>
+                    <th>Tipo de Cuenta</th>
                     <th>Acciones</th>
                     </tr>
                 </thead>
@@ -88,6 +109,26 @@ export default function HomeAdmin() {
                         <td>{emp.email}</td>
                         <td>{emp.nuip}</td>
                         <td>{emp.phone || "N/A"}</td>
+                        <td>
+                            {bankInfo[emp.id]?.bank_name ? (
+                                bankInfo[emp.id].bank_name
+                            ) : bankInfo[emp.id]?.error ? (
+                                <span className="bank-error">{bankInfo[emp.id].error}</span>
+                            ) : (
+                                <button className="action-button bank" onClick={() => fetchBankInfo(emp.id)}>
+                                    Ver Banco
+                                </button>
+                            )}
+                        </td>
+                        <td>
+                            {bankInfo[emp.id]?.account_type ? (
+                                bankInfo[emp.id].account_type
+                            ) : bankInfo[emp.id]?.error ? (
+                                <span className="bank-error">-</span>
+                            ) : (
+                                <span>-</span>
+                            )}
+                        </td>
                         <td className="actions">
                         <button 
                             className="action-button payslip" 
