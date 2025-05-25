@@ -21,7 +21,7 @@ def get_companies():
 @company_bp.route('/<int:company_id>', methods=['GET'])
 def get_company(company_id):
     company = Company.query.get_or_404(company_id)
-    return jsonify(company.to_ditc()), 200
+    return jsonify(company.to_dict()), 200
 
 @company_bp.route('/code/<int:code>', methods=['GET'])
 def get_company_by_code(code):

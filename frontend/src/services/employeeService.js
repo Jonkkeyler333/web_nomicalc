@@ -19,7 +19,7 @@ export function deleteEmployee(id) {
     return axios.delete(`${API_URL}/api/employee/${id}`);
 }
 
-export function getEmployeesByCompany(name, companyId) {
+export function getEmployeesByCompany(companyId,name) {
   const params = {};
   if (name) params.name = name;
   

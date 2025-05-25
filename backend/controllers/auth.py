@@ -12,14 +12,12 @@ def login():
     if not data or 'email' not in data or 'password' not in data:
         return jsonify({'error': 'Email and password are required'}), 400
     
-    # Try to authenticate as a user first
     user = User.query.filter_by(email=data['email']).first()
     if user and check_password_hash(user.password, data['password']):
         additional_claims = {"type":"user"}
         access_token = create_access_token(identity=str(user.id),additional_claims=additional_claims)
         return jsonify({'access_token': access_token, 'user_type': 'user','user':user.to_dict()}), 200
     
-    # If not a user, try as an employee
     employee = Employee.query.filter_by(email=data['email']).first()
     if employee and check_password_hash(employee.password, data['password']):
         additional_claims = {"type":"employee"}
