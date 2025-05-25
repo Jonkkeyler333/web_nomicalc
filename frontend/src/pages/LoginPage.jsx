@@ -22,10 +22,10 @@ export default function LoginPage() {
       setError('');
       setSuccess(true);
       //esperamos 2 segundos para que el usuario vea el mensaje de exito
-      setTimeout(10000 , () => {
-        setError('');
-        setSuccess(false);
-      });
+      setTimeout(() => {
+          setError('');
+          setSuccess(false);
+      }, 10000);
       navigate('/home');
     } catch (err) {
       setError(err.response?.data?.error || 'Error de autenticación');

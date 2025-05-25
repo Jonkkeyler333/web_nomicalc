@@ -15,50 +15,34 @@ def login():
     # Try to authenticate as a user first
     user = User.query.filter_by(email=data['email']).first()
     if user and check_password_hash(user.password, data['password']):
-        # access_token = create_access_token(identity=user.id,additional_claims={"type": "user"})
-        # return jsonify({'access_token': access_token,'user_type': 'user','user': user.to_dict()}), 200
-        access_token = create_access_token(identity={"id": user.id, "type": "user"})
+        additional_claims = {"type":"user"}
+        access_token = create_access_token(identity=str(user.id),additional_claims=additional_claims)
         return jsonify({'access_token': access_token, 'user_type': 'user','user':user.to_dict()}), 200
     
     # If not a user, try as an employee
     employee = Employee.query.filter_by(email=data['email']).first()
     if employee and check_password_hash(employee.password, data['password']):
-        access_token = create_access_token(identity={"id": employee.id, "type": "employee"})
+        additional_claims = {"type":"employee"}
+        access_token = create_access_token(identity=str(employee.id),additional_claims=additional_claims)
         return jsonify({'access_token': access_token, 'user_type': 'employee','user':employee.to_dict()}), 200
-        # access_token = create_access_token(identity=employee.id,additional_claims={"type": "employee"})
-        # return jsonify({'access_token': access_token,'user_type': 'employee','user': employee.to_dict()}), 200
-    
-    # If neither, return error
     return jsonify({'error': 'Invalid credentials'}), 401
 
 @auth_bp.route('/profile',methods=['GET'])
 @jwt_required()
 def get_profile():
-    # identity=get_jwt_identity()
-    # current_id = get_jwt_identity()  # será “2” o 2
-    # claims     = get_jwt()           # dict con {"type": "user", ...}
-    # user_type  = claims.get("type")
-    identity= get_jwt_identity()
-    user_type = identity['type']
-    current_id = identity['id']
-    # print(identity)
-    # if user_type == 'user':
-    #     user = User.query.get(current_id)
-    #     if not user:
-    #         return jsonify({'error': 'User not found'}), 404
-    #     return jsonify(user.to_dict()),200
-    # else:
-    #     employee=Employee.query.get(current_id)
-    #     if not employee:
-    #         return jsonify({'error': 'Employee not found'}), 404
-    #     return jsonify(employee.to_dict()),200
+    # 1. La identidad (sub) es sólo el user.id en string:
+    identity = get_jwt_identity()           # ej. "42"
+    # 2. Los claims adicionales van aparte:
+    claims = get_jwt()                      # ej. {"type":"user", "company_id": 7, ...}
+    user_type = claims.get("type")          # "user" o "employee"
+    user_id   = int(identity)               # convertimos a entero para query
     if user_type == 'user':
-        user = User.query.get(current_id)
-        if not user:
-            return jsonify({'error': 'User not found'}), 404
-        return jsonify(user.to_dict()),200
+        user = User.query.get(user_id)
     else:
-        employee=Employee.query.get(current_id)
-        if not employee:
-            return jsonify({'error': 'Employee not found'}), 404
-        return jsonify(employee.to_dict()),200
+        user = Employee.query.get(user_id)
+    if not user:
+        return jsonify({'error': f'{user_type} not found'}), 404
+    # Si quieres devolver el company_id en la respuesta, lo tienes en claims:
+    result = user.to_dict()
+    # result['company_id'] = claims.get('company_id')
+    return jsonify(result), 200

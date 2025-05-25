@@ -10,6 +10,6 @@ export function getProfile() {
   const token = localStorage.getItem('access_token');
   console.log({Authorization: `Bearer ${token}`})
   return axios.get(`${API_URL}/auth/profile`, {
-    headers: { Authorization: `Bearer ${token}` }
+  headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` }
   });
 }
