@@ -42,7 +42,7 @@ def get_profile():
         user = Employee.query.get(user_id)
     if not user:
         return jsonify({'error': f'{user_type} not found'}), 404
-    # Si quieres devolver el company_id en la respuesta, lo tienes en claims:
+    # se devuelve el usuario como un diccionario
     result = user.to_dict()
-    # result['company_id'] = claims.get('company_id')
+    # result['company_id'] = claims.get('company_id') esto no
     return jsonify(result), 200
