@@ -4,7 +4,7 @@ import { useNavigate ,Link } from 'react-router-dom';
 import { getEmployeesByCompany } from '../services/employeeService';
 import { getCompanyById } from '../services/companyService';
 import { getBank } from '../services/bankService';
-import './HomeAdmin.css'; // Necesitaremos crear este archivo CSS
+import './HomeAdmin.css'; 
 
 export default function HomeAdmin() {
     const { currentUser, companyId, isAdmin, loading } = useAuth();
@@ -26,13 +26,11 @@ export default function HomeAdmin() {
     }, [companyId]);
 
     const handleManagePayslip = (employeeId) => {
-        // Aquí la lógica para navegar a la página de nóminas del empleado
         console.log("Administrar nómina del empleado:", employeeId);
         navigate(`/payslip/${employeeId}`);
     };
 
     const handleEditEmployee = (employeeId) => {
-        // Aquí la lógica para editar el empleado
         console.log("Editar empleado:", employeeId);
         // navigate(`/employees/edit/${employeeId}`);
     };

@@ -39,9 +39,9 @@ def create_payslip():
         return jsonify({'error': 'Month and year are required'}), 400
     if Payslip.query.filter_by(employee_id=data['employee_id'], month=data['month'], year=data['year']).first():
         return jsonify({'error': 'Payslip for this month and year already exists'}), 400
-    if 'gross_salary' not in data or 'net_salary' not in data or 'deductions' not in data:
+    if 'gross_salary' not in data or 'deductions' not in data:
         return jsonify({'error': 'Gross salary, net salary and deductions are required'}), 400
-    if check_values(data,'gross_salary','net_salary','deductions') == False:
+    if check_values(data,'gross_salary','deductions') == False:
         return jsonify({'error': 'Gross salary, net salary and deductions must be positive'}), 400
     if 'observations' not in data:
         data['observations'] = ''
@@ -52,7 +52,8 @@ def create_payslip():
         month=data['month'],
         year=data['year'],
         basic_salary=data['gross_salary'],
-        allowances=data['net_salary'],
+        allowances=data['allowances'],
+        net_salary=0,
         deductions=data['deductions'],
         observations=data['observations'],
         account_number=data['account_number'],

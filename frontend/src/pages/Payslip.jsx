@@ -1,6 +1,7 @@
 import { useEffect, useState} from 'react';
 import { useAuth } from '../context/authContext';
-import { getPayslipsByEmployee, createPayslip, generatePayslipPDF } from '../services/payslipService';
+import { getPayslipsByEmployee, createPayslip, generatePayslipPDF, calculateNetSalary } from '../services/payslipService';
+import { getBank } from '../services/bankService';
 import FormInput from '../components/FormInput';
 import FormSection from '../components/FormSection';
 import SubmitButton from '../components/SubmitButton';
@@ -13,11 +14,12 @@ export default function Payslip() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [downloading, setDownloading] = useState(null);
+    const [calculating, setCalculating] = useState(null);
+    const [bankInfo, setBankInfo] = useState(null);
     const [form, setForm] = useState({
         month: '',
         year: '',
         gross_salary: '',
-        net_salary: '',
         deductions: '',
         observations: '',
         allowances: '',
@@ -25,6 +27,7 @@ export default function Payslip() {
     });
     const [submitting, setSubmitting] = useState(false);
     const [formError, setFormError] = useState(null);
+    const [bankLoading, setBankLoading] = useState(false);
 
     useEffect(() => {
         if (employeeId) {
@@ -37,13 +40,28 @@ export default function Payslip() {
             })
             .catch(err => {
                 if (err.response && err.response.status === 404) {
-                setPayslips([]);
-                setLoading(false);
+                    setPayslips([]);
+                    setLoading(false);
                 } else {
-                setError('No se pudieron cargar las nóminas');
-                setLoading(false);
+                    setError('No se pudieron cargar las nóminas');
+                    setLoading(false);
                 }
             });
+            
+            setBankLoading(true);
+            getBank(employeeId)
+                .then(res => {
+                    setBankInfo(res.data);
+                    setForm(prevForm => ({
+                        ...prevForm,
+                        account_number: res.data.account_number || ''
+                    }));
+                    setBankLoading(false);
+                })
+                .catch(err => {
+                    console.log("No se pudo cargar la información bancaria", err);
+                    setBankLoading(false);
+                });
         }
     }, [employeeId]);
 
@@ -65,6 +83,22 @@ export default function Payslip() {
         setDownloading(null);
     };
 
+    const handleCalculateNetSalary = async (payslipId) => {
+        setCalculating(payslipId);
+        try {
+            const response = await calculateNetSalary(payslipId);
+            setPayslips(prevPayslips => 
+                prevPayslips.map(p => 
+                    p.id === payslipId ? {...p, net_salary: response.data.net_salary} : p
+                )
+            );
+            alert(`Salario neto calculado: $${response.data.net_salary.toLocaleString()}`);
+        } catch (err) {
+            alert('Error al calcular el salario neto');
+        }
+        setCalculating(null);
+    };
+
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
@@ -78,22 +112,22 @@ export default function Payslip() {
                 ...form,
                 employee_id: employeeId,
                 gross_salary: parseFloat(form.gross_salary),
-                net_salary: parseFloat(form.net_salary),
                 deductions: parseFloat(form.deductions),
-                allowances: parseFloat(form.allowances) || 0
+                allowances: parseFloat(form.allowances) || 0,
+                account_number: form.account_number || (bankInfo?.account_number || '')
             };
-            await createPayslip(data);
+            
+            const createResponse = await createPayslip(data);
             const res = await getPayslipsByEmployee(employeeId);
             setPayslips(res.data);
             setForm({
                 month: '',
                 year: '',
                 gross_salary: '',
-                net_salary: '',
                 deductions: '',
                 observations: '',
                 allowances: '',
-                account_number: ''
+                account_number: bankInfo?.account_number || ''
             });
         } catch (err) {
             setFormError(err.response?.data?.error || 'Error al crear la nómina');
@@ -113,9 +147,29 @@ export default function Payslip() {
                     <FormInput label="Sueldo Básico" name="gross_salary" type="number" value={form.gross_salary} onChange={handleChange} required />
                     <FormInput label="Auxilios" name="allowances" type="number" value={form.allowances} onChange={handleChange} />
                     <FormInput label="Deducciones" name="deductions" type="number" value={form.deductions} onChange={handleChange} required />
-                    <FormInput label="Salario Neto" name="net_salary" type="number" value={form.net_salary} onChange={handleChange} required />
                     <FormInput label="Observaciones" name="observations" value={form.observations} onChange={handleChange} />
-                    <FormInput label="Número de Cuenta" name="account_number" value={form.account_number} onChange={handleChange} />
+                    
+                    {/* Campo de número de cuenta, pre-llenado y con indicador de carga */}
+                    <div style={{ position: 'relative' }}>
+                        <FormInput 
+                            label={`Número de Cuenta${bankInfo ? ' (Pre-llenado del banco)' : ''}`} 
+                            name="account_number" 
+                            value={form.account_number} 
+                            onChange={handleChange}
+                            disabled={bankLoading}
+                        />
+                        {bankLoading && (
+                            <span style={{ position: 'absolute', right: '10px', top: '50%', color: '#666' }}>
+                                Cargando...
+                            </span>
+                        )}
+                        {bankInfo && (
+                            <div style={{ fontSize: '0.8em', color: '#666', marginTop: '-0.5rem' }}>
+                                Banco: {bankInfo.bank_name} | Tipo: {bankInfo.account_type}
+                            </div>
+                        )}
+                    </div>
+                    
                     {formError && <div style={{ color: 'red' }}>{formError}</div>}
                     <SubmitButton disabled={submitting}>{submitting ? 'Guardando...' : 'Registrar Nómina'}</SubmitButton>
                 </form>
@@ -134,7 +188,7 @@ export default function Payslip() {
                             <th>Auxilios</th>
                             <th>Deducciones</th>
                             <th>Salario Neto</th>
-                            <th>PDF</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -146,12 +200,19 @@ export default function Payslip() {
                             <td>${p.allowances?.toLocaleString()}</td>
                             <td>${p.deductions?.toLocaleString()}</td>
                             <td>${(p.basic_salary + p.allowances - p.deductions)?.toLocaleString()}</td>
-                            <td>
+                            <td className="actions">
                                 <button 
                                     onClick={() => handleDownloadPDF(p.id)}
                                     disabled={downloading === p.id}
                                 >
                                     {downloading === p.id ? 'Descargando...' : 'Descargar PDF'}
+                                </button>
+                                <button
+                                    onClick={() => handleCalculateNetSalary(p.id)}
+                                    disabled={calculating === p.id}
+                                    style={{ marginLeft: '8px' }}
+                                >
+                                    {calculating === p.id ? 'Calculando...' : 'Calcular Neto'}
                                 </button>
                             </td>
                         </tr>
