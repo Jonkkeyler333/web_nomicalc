@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { getPayslipsByEmployee, generatePayslipPDF, calculateNetSalary } from '../services/payslipService';
 import { getBank } from '../services/bankService';
 import FormSection from '../components/FormSection';
+import './HomeEmployee.css';
 
 import './HomeAdmin.css';
 
@@ -16,7 +17,7 @@ export default function HomeEmployee() {
     const [bankInfo, setBankInfo] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
-    const navigate = useNavigate();
+    //const navigate = useNavigate();
     
     // Estados para manejar las nóminas
     const [payslips, setPayslips] = useState([]);

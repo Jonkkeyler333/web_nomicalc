@@ -1,0 +1,48 @@
+/* src/components/Header.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
+
+:root {
+  --primary-purple: #6B46C1;
+  --white: #fff;
+  --transition-fast: 0.2s ease;
+}
+
+.app-header {
+  background-color: var(--primary-purple);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+}
+
+.logo img {
+  height: 40px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.welcome-text {
+  color: var(--white);
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.1rem;
+}
+
+.btn.logout {
+  background-color: #e53e3e;
+  color: var(--white);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform var(--transition-fast),
+              background-color var(--transition-fast);
+}
+
+.btn.logout:hover {
+  background-color: #c53030;
+  transform: scale(1.05);
+}

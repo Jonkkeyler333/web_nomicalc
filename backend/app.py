@@ -9,13 +9,15 @@ from backend.controllers.bank_account import bank_bp
 from backend.controllers.payslip import payslip_bp
 from backend.controllers.auth import auth_bp
 import os
+from flask_cors import CORS
 
 def create_app():
     app = Flask(__name__)
+    CORS(app, origins=["http://localhost:3000"])
     app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///site.db"
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['JWT_SECRET_KEY'] = 'una_clave_secreta_segura'
-    
+       
     @app.route('/')
     def index():
         return Response("<h1>Welcome to the <em>API</em> of Web_nomicalc</h1> <h2>Ve a /api/employee</h2>",200)
@@ -35,7 +37,7 @@ def create_app():
 
     with app.app_context():
         from backend import models
-        # db.create_all()  # Crea tablas si no existen
+         #db.create_all()
 
     return app
 

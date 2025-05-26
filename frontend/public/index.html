@@ -1,5 +1,322 @@
 <!DOCTYPE html>
 <html lang="en">
+
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+  <meta charset="utf-8" />
+  <link rel="icon" href="%PUBLIC_URL%/logo1000.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="Web_Nomicalc" content="A simple web application for calculating payroll values in the company" />
+  <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo1000.png" />
+  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+  <title>Web_Nomicalc</title>
+  <style>
+    :root {
+      --primary-purple: #6B46C1;
+      --secondary-green: #38A169;
+      --secondary-green-dark: #2F855A;
+      --light-gray: white;
+      --blue: white;
+      --orange: #F6AD55;
+      --dark-purple: #9F7AEA;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    #global-header {
+      background-color: #6B46C1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1.5rem;
+    }
+
+    #global-header .logo img {
+      height: 40px;
+    }
+
+    #global-header .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    #welcome-text {
+      color: black;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.1rem;
+    }
+
+    /* Botón Cerrar Sesión */
+    #logout-btn {
+      background-color: #e53e3e;
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+
+    #logout-btn:hover {
+      background-color: #c53030;
+      transform: scale(1.05);
+    }
+
+    /* Animación hover para todos los botones */
+    button {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    button,
+    .btn {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    button:hover,
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: 'Poppins', sans-serif;
+      color: black;
+      /* Títulos en blanco */
+    }
+
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--light-gray);
+      color: black;
+    }
+
+    header {
+      background-color: var(--primary-purple);
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo img {
+      height: 40px;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav ul li {
+      margin: 0 10px;
+    }
+
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    nav ul li a:hover {
+      text-decoration: underline;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      margin-left: 20px;
+    }
+
+    .user-profile span {
+      margin-right: 10px;
+    }
+
+    .user-profile button {
+      background-color: var(--secondary-green);
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .user-profile button:hover {
+      background-color: var(--secondary-green-dark);
+    }
+
+    .container {
+      padding: 20px;
+      background-color: white;
+      margin: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    footer {
+      text-align: center;
+      padding: 10px;
+      background-color: var(--primary-purple);
+      color: white;
+      position: fixed;
+      width: 100%;
+      bottom: 0;
+    }
+
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      nav {
+        width: 100%;
+      }
+
+      nav ul {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      nav ul li {
+        margin: 10px 0;
+      }
+
+      .user-profile {
+        margin-top: 10px;
+      }
+
+      .container {
+        margin: 10px;
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header id="global-header">
+    <div class="logo">
+      <img src="%PUBLIC_URL%/logo1000.png" alt="Web_Nomicalc Logo">
+    </div>
+    <div class="header-right">
+    </div>
+  </header>
+
+  <noscript>Necesitas habilitar JavaScript para ejecutar esta aplicación.</noscript>
+  <div id="root" class="container">
+    <!-- Los componentes de React se renderizarán aquí -->
+  </div>
+  <footer>
+    <p>© 2025 Web_Nomicalc. Todos los derechos reservados.</p>
+  </footer>
+</body>
+
+</html>
+
+
+
+
+
+<!--
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/logo1000.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="Web_Nomicalc"
+      content="A simple web application for calculating payroll values in the company"
+    />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo1000.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <title>Web_Nomicalc</title>
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #e6f0ff;
+        color: #333;
+      }
+      header {
+        background-color: #004080;
+        color: white;
+        padding: 20px;
+        text-align: center;
+      }
+      nav {
+        display: flex;
+        justify-content: center;
+        margin: 20px 0;
+      }
+      nav a {
+        margin: 0 20px;
+        color: #004080;
+        text-decoration: none;
+        font-weight: bold;
+      }
+      nav a:hover {
+        text-decoration: underline;
+      }
+      .container {
+        padding: 20px;
+      }
+      footer {
+        text-align: center;
+        padding: 10px;
+        background-color: #003366;
+        color: white;
+        position: fixed;
+        width: 100%;
+        bottom: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Web_Nomicalc</h1>
+      <h2>Your Payroll Management Solution</h2>
+    </header>
+
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root" class="container">
+       React components will be rendered here 
+    </div>
+    <footer>
+      <p>&copy; 2025 Web_Nomicalc. All rights reserved.</p>
+    </footer>
+  </body>
+</html>
+-->
+
+
+
+<!--
+<!DOCTYPE html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/logo1000.png" />
@@ -27,3 +344,4 @@
     </footer>
   </body>
 </html>
+-->
