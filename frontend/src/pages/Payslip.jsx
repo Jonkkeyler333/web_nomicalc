@@ -6,6 +6,7 @@ import FormInput from '../components/FormInput';
 import FormSection from '../components/FormSection';
 import SubmitButton from '../components/SubmitButton';
 import { useParams } from 'react-router-dom';
+import './Payslip.css';
 
 export default function Payslip() {
     const { isAdmin } = useAuth();
@@ -140,6 +141,7 @@ export default function Payslip() {
 
     return (
         <div className="payslip-page">
+            <h1>Administrar Nómina del Empleado</h1>
             <FormSection title="Registrar nueva nómina para empleado">
                 <form onSubmit={handleSubmit}>
                     <FormInput label="Mes" name="month" value={form.month} onChange={handleChange} required />
@@ -150,7 +152,7 @@ export default function Payslip() {
                     <FormInput label="Observaciones" name="observations" value={form.observations} onChange={handleChange} />
                     
                     {/* Campo de número de cuenta, pre-llenado y con indicador de carga */}
-                    <div style={{ position: 'relative' }}>
+                    <div className="account-field">
                         <FormInput 
                             label={`Número de Cuenta${bankInfo ? ' (Pre-llenado del banco)' : ''}`} 
                             name="account_number" 
@@ -159,25 +161,25 @@ export default function Payslip() {
                             disabled={bankLoading}
                         />
                         {bankLoading && (
-                            <span style={{ position: 'absolute', right: '10px', top: '50%', color: '#666' }}>
+                            <span className="loading-indicator">
                                 Cargando...
                             </span>
                         )}
                         {bankInfo && (
-                            <div style={{ fontSize: '0.8em', color: '#666', marginTop: '-0.5rem' }}>
+                            <div className="bank-info">
                                 Banco: {bankInfo.bank_name} | Tipo: {bankInfo.account_type}
                             </div>
                         )}
                     </div>
                     
-                    {formError && <div style={{ color: 'red' }}>{formError}</div>}
+                    {formError && <div className="form-error">{formError}</div>}
                     <SubmitButton disabled={submitting}>{submitting ? 'Guardando...' : 'Registrar Nómina'}</SubmitButton>
                 </form>
             </FormSection>
     
             <h2>Nóminas del empleado</h2>
             {payslips.length === 0 ? (
-                <p>No hay nóminas registradas.</p>
+                <p className="no-data">No hay nóminas registradas.</p>
             ) : (
                 <table className="payslip-table">
                     <thead>

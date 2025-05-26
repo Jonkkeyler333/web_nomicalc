@@ -25,8 +25,6 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
-  // const [empleado, setEmpleado] = useState("");
-  // const [admin , setAdmin] = useState("");
 
   // Estados para el empleado
   const [phone, setPhone] = useState("");
@@ -49,7 +47,6 @@ export default function RegisterPage() {
     setError("");
     setSuccess(false);
     try {
-      // 1. Registrar la compañía
       const companyRes = await register_company(
         companyName,
         companyNit,
@@ -62,7 +59,7 @@ export default function RegisterPage() {
       console.log(company);
       console.log(company)
 
-      // 2. Registrar el usuario con el company_id y role_id = 1
+      // Registrar el usuario con el company_id y role_id = 1
       await register_us({
         name,
         last_name,
@@ -87,13 +84,12 @@ export default function RegisterPage() {
     setError("");
     setSuccess(false);
     try {
-      // 1. Verificar si la compañia existe
       const companyRes = await checkCompany(companycode);
       const company = companyRes.data;
       console.log(company);
       console.log(company.id);
 
-      // 2. Registrar el empleado role_id = 2
+      // Registrar el empleado role_id = 2
       const employeeRest = await register_employee({
         name,
         last_name,

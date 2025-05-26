@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate ,Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { loginService } from '../services/authService';
 import { useAuth } from '../context/authContext';
 
@@ -8,25 +8,31 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-  const {login} = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      const { data } = await loginService(email, password);
-      console.log(data);
-      login(data);
-      setError('');
-      setSuccess(true);
-      setTimeout(() => {
+        const { data } = await loginService(email, password);
+        console.log(data);
+        login(data);
+        setError('');
+        setSuccess(true);
+        const userType = data.user_type;
+        setTimeout(() => {
           setError('');
           setSuccess(false);
-      }, 10000);
-      navigate('/home');
-    } catch (err) {
-      setError(err.response?.data?.error || 'Error de autenticación');
-    }
+          if (userType === 'employee') {
+            navigate('/home_employee');
+          } else {
+            navigate('/home');
+          }
+        }, 1000);
+        
+      } catch (err) {
+        setError(err.response?.data?.error || 'Error de autenticación');
+      }
   };
 
   return (

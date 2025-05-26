@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/authContext';
-import { useNavigate ,Link } from 'react-router-dom';
+import { useNavigate} from 'react-router-dom';
 import { getEmployeesByCompany } from '../services/employeeService';
 import { getCompanyById } from '../services/companyService';
 import { getBank } from '../services/bankService';
+import LogoutButton from '../components/logout';
 import './HomeAdmin.css'; 
 
 export default function HomeAdmin() {
@@ -32,7 +33,7 @@ export default function HomeAdmin() {
 
     const handleEditEmployee = (employeeId) => {
         console.log("Editar empleado:", employeeId);
-        // navigate(`/employees/edit/${employeeId}`);
+        navigate(`/employees/edit/${employeeId}`);
     };
 
     const fetchBankInfo = async (employeeId) => {
@@ -74,6 +75,7 @@ export default function HomeAdmin() {
         <div className="admin-dashboard">
         <header className="dashboard-header">
             <h1>Bienvenido, {currentUser?.name}</h1>
+            <LogoutButton />
             <p className="company-name">Empresa: {company?.name || "Tu Compañía"}</p>
             {isAdmin && <span className="admin-badge">Administrador</span>}
         </header>
